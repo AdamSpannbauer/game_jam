@@ -1,28 +1,59 @@
 const canvasW = 512;
 const canvasH = 512;
 
+let gameStarted = false;
+let startButtonTarget;
+
 let targetList;
 let player;
 let timer;
 
+
+function resetGame() {
+  targetList = new TargetList(10);
+  timer = new Timer();
+}
+
+
 function setup() {
   createCanvas(canvasW, canvasH);
-  targetList = new TargetList(10);
   player = new Player(10);
-  timer = new Timer();
+  startButtonTarget = new Target(width / 2 , height / 2, 100, 200);
 }
 
 
 function draw() {
   background(10);
-  targetList.draw();
+
+  if (gameStarted) {
+    targetList.draw();
+    timer.draw();
+  } else {
+    textSize(20);
+    textAlign(CENTER);
+    text(
+      'Click circle to start.\nClick circles in order (• -> o -> O) of size to win.', 
+      width / 2,
+      80
+    );
+    startButtonTarget.draw();
+  }
+
   player.draw();
-  timer.draw();
 }
 
 
 function mouseClicked() {
-  targetList.checkHit(player.x, player.y, player.radius);
+  if (gameStarted) {
+    targetList.checkHit(player.x, player.y, player.radius);    
+  } else {
+    startButtonTarget.isOverlapping(player.x, player.y, player.radius);    
+
+    if (startButtonTarget.isHit) {
+      gameStarted = true;
+      resetGame();
+    }
+  }
 }
 
 
@@ -116,6 +147,9 @@ class Timer {
 
   draw() {
     textSize(20)
+    textAlign(LEFT)
+    stroke(200, 100, 30)
+    fill(200, 100, 30)
     text(this.elapsed.toFixed(2), 10, 20)
   }
 
