@@ -3,12 +3,13 @@ const canvasH = 512;
 
 let targetList;
 let player;
-
+let timer;
 
 function setup() {
   createCanvas(canvasW, canvasH);
   targetList = new TargetList(10);
   player = new Player(10);
+  timer = new Timer();
 }
 
 
@@ -16,6 +17,7 @@ function draw() {
   background(10);
   targetList.draw();
   player.draw();
+  timer.draw();
 }
 
 
@@ -100,4 +102,21 @@ class TargetList {
       target.isOverlapping(x, y, radius);
     }
   }
+}
+
+class Timer {
+  constructor() {
+    this.start = Date.now()
+  }
+
+  get elapsed() {
+    const millis = Date.now() - this.start
+    return millis / 1000
+  }
+
+  draw() {
+    textSize(20)
+    text(this.elapsed.toFixed(2), 10, 20)
+  }
+
 }
