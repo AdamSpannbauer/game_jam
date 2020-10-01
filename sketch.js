@@ -1,11 +1,11 @@
-const canvas_w = 512;
-const canvas_h = 512;
+const canvasW = 512;
+const canvasH = 512;
 
 let targetList;
 
 
 function setup() {
-  createCanvas(canvas_w, canvas_h);
+  createCanvas(canvasW, canvasH);
   targetList = new TargetList(10);
 }
 
@@ -22,19 +22,19 @@ class Target {
     this.y = y;
     this.radius = radius;
     this.color = color;
-    this.order_id = null;
-    this.is_hit = false;
+    this.orderId = null;
+    this.isHit = false;
   }
 
-  is_overlapping(x, y, radius) {
+  isOverlapping(x, y, radius) {
     const d = dist(x, y, this.x, this.y);
     if (d < radius + this.radius) {
-      this.is_hit = true;
+      this.isHit = true;
     }
   }
 
   draw() {
-    if (!this.is_hit) {
+    if (!this.isHit) {
       fill(this.color);
       noStroke();
       ellipse(this.x, this.y, this.radius * 2, this.radius * 2);
@@ -69,7 +69,7 @@ class TargetList {
 
   checkHit(x, y, radius) {
     for (let target of this.targets) {
-      target.is_overlapping(x, y, radius)
+      target.isOverlapping(x, y, radius)
     }
   }
 }
