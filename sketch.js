@@ -2,12 +2,15 @@ const canvasW = 512;
 const canvasH = 512;
 
 let gameStarted = false;
+let gameOver = false;
 let startButtonTarget;
 
 let targetList;
 let player;
 let timer;
+let bestScore = Infinity;
 
+const precision = 3;
 
 function resetGame() {
   targetList = new TargetList(10);
@@ -18,7 +21,7 @@ function resetGame() {
 function setup() {
   createCanvas(canvasW, canvasH);
   player = new Player(10);
-  startButtonTarget = new Target(width / 2 , height / 2, 100, 200);
+  startButtonTarget = new Target(width / 2, height / 2, 100, 200);
 }
 
 
@@ -28,14 +31,30 @@ function draw() {
   if (gameStarted) {
     targetList.draw();
     timer.draw();
+    if (targetList.gameOver) {
+      gameOver = true
+      gameStarted = false;
+      startButtonTarget = new Target(width / 2, height / 2, 100, 200);
+      if (timer.elapsed < bestScore) {
+        bestScore = timer.elapsed
+      }
+    }
   } else {
     textSize(20);
     textAlign(CENTER);
     text(
-      'Click circle to start.\nClick circles in order (• -> o -> O) of size to win.', 
+      'Click circle to start.\nClick circles in order (• -> o -> O) of size to win.',
       width / 2,
       80
     );
+
+    if (bestScore < Infinity) {
+      text(
+        `Best: ${bestScore.toFixed(precision)}`,
+        width / 2,
+        420
+      )
+    }
     startButtonTarget.draw();
   }
 
@@ -45,9 +64,9 @@ function draw() {
 
 function mouseClicked() {
   if (gameStarted) {
-    targetList.checkHit(player.x, player.y, player.radius);    
+    targetList.checkHit(player.x, player.y, player.radius);
   } else {
-    startButtonTarget.isOverlapping(player.x, player.y, player.radius);    
+    startButtonTarget.isOverlapping(player.x, player.y, player.radius);
 
     if (startButtonTarget.isHit) {
       gameStarted = true;
@@ -133,6 +152,16 @@ class TargetList {
       target.isOverlapping(x, y, radius);
     }
   }
+
+  get gameOver() {
+    for (const target of this.targets) {
+      if (!target.isHit) {
+        return false;
+      }
+    }
+    return true
+  }
+
 }
 
 class Timer {
@@ -150,7 +179,7 @@ class Timer {
     textAlign(LEFT)
     stroke(200, 100, 30)
     fill(200, 100, 30)
-    text(this.elapsed.toFixed(2), 10, 20)
+    text(this.elapsed.toFixed(precision), 10, 20)
   }
 
 }
