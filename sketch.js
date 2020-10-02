@@ -1,4 +1,4 @@
-const canvasW = 512;
+let canvasW = 512;
 const canvasH = 512;
 
 let gameStarted = false;
@@ -19,6 +19,13 @@ function resetGame() {
 
 
 function setup() {
+  if (windowWidth < canvasW) {
+    canvasW = windowWidth;
+  }
+  if (windowHeight < canvasH) {
+    canvasH = windowHeight;
+  }
+  
   createCanvas(canvasW, canvasH);
   player = new Player(10);
   startButtonTarget = new Target(width / 2, height / 2, 100, 200);
