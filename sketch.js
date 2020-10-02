@@ -75,6 +75,10 @@ function mouseClicked() {
   }
 }
 
+function touchStarted() {
+  mouseClicked();
+}
+
 
 class Player {
   constructor(radius) {
