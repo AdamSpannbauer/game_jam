@@ -91,6 +91,7 @@ class Player {
 
   draw() {
     fill(200, 100, 30);
+    noStroke();
     ellipse(mouseX, mouseY, this.radius * 2, this.radius * 2);
   }
 }
@@ -111,12 +112,14 @@ class Target {
     if (d < radius + this.radius) {
       this.isHit = true;
     }
+
+    return this.isHit;
   }
 
   draw() {
     if (!this.isHit) {
       fill(this.color);
-      noStroke();
+      stroke(0);
       ellipse(this.x, this.y, this.radius * 2, this.radius * 2);
     }
   }
@@ -127,9 +130,10 @@ class TargetList {
   constructor(n) {
     this.minRadius = 10;
     this.maxRadius = 40;
-    this.targets = []
+    this.targets = [];
+
     for (let i = 0; i < n; i++) {
-      const r = map(i, 0, n - 1, this.minRadius, this.maxRadius);
+      const r = map(i, 0, n - 1, this.maxRadius, this.minRadius);
 
       const target = new Target(
         random(r, width - r),
@@ -148,18 +152,15 @@ class TargetList {
   }
 
   checkHit(x, y, radius) {
-    for (let target of this.targets) {
-      target.isOverlapping(x, y, radius);
+    const smallestTarget = this.targets[this.targets.length - 1]
+    const isHit = smallestTarget.isOverlapping(x, y, radius);
+    if (isHit) {
+      this.targets.pop();
     }
   }
 
   get gameOver() {
-    for (const target of this.targets) {
-      if (!target.isHit) {
-        return false;
-      }
-    }
-    return true
+    return this.targets.length == 0;
   }
 
 }
