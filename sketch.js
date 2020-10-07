@@ -1,5 +1,5 @@
 let canvasW = 512;
-const canvasH = 512;
+let canvasH = 512;
 
 let gameStarted = false;
 let gameOver = false;
