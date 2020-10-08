@@ -8,12 +8,26 @@ let startButtonTarget;
 let targetList;
 let player;
 let timer;
-let bestScore = Infinity;
+
+let easyBestScore = Infinity;
+let mediumBestScore = Infinity;
+let hardBestScore = Infinity;
+let difficulty;
+let numberOfTargets;
 
 const precision = 3;
 
 function resetGame() {
-  targetList = new TargetList(10);
+
+  if (difficulty === 'Easy') {
+    numberOfTargets = 10;
+  } else if (difficulty === 'Medium') {
+    numberOfTargets = 15;
+  } else if (difficulty === 'Hard') {
+    numberOfTargets = 20;
+  }
+
+  targetList = new TargetList(numberOfTargets);
   timer = new Timer();
 }
 
@@ -25,10 +39,12 @@ function setup() {
   if (windowHeight < canvasH) {
     canvasH = windowHeight;
   }
-  
+
   createCanvas(canvasW, canvasH);
   player = new Player(10);
-  startButtonTarget = new Target(width / 2, height / 2, 100, 200);
+  startButtonEasy = new Target(width / 4, height / 2, 50, 200);
+  startButtonMedium = new Target(width / 2, height / 2, 50, 200);
+  startButtonHard = new Target(width - width / 4, height / 2, 50, 200);
 }
 
 
@@ -41,28 +57,70 @@ function draw() {
     if (targetList.gameOver) {
       gameOver = true
       gameStarted = false;
-      startButtonTarget = new Target(width / 2, height / 2, 100, 200);
-      if (timer.elapsed < bestScore) {
-        bestScore = timer.elapsed
+      startButtonEasy = new Target(width / 4, height / 2, 50, 200);
+      startButtonMedium = new Target(width / 2, height / 2, 50, 200);
+      startButtonHard = new Target(width - width / 4, height / 2, 50, 200);
+      if (timer.elapsed < easyBestScore && difficulty === 'Easy') {
+        easyBestScore = timer.elapsed
+      }
+      if (timer.elapsed < mediumBestScore && difficulty === 'Medium') {
+        mediumBestScore = timer.elapsed
+      }
+      if (timer.elapsed < hardBestScore && difficulty === 'Hard') {
+        hardBestScore = timer.elapsed
       }
     }
   } else {
     textSize(20);
     textAlign(CENTER);
     text(
-      'Click circle to start.\nClick circles in order (• -> o -> O) of size to win.',
+      'Choose difficulty.\nClick circles in order (• -> o -> O) of size to win.',
       width / 2,
       80
     );
 
-    if (bestScore < Infinity) {
+    if (easyBestScore < Infinity) {
       text(
-        `Best: ${bestScore.toFixed(precision)}`,
+        ` Easy: ${easyBestScore.toFixed(precision)}`,
+        width / 2,
+        380
+      )
+    }
+    if (mediumBestScore < Infinity) {
+      text(
+        `Medium: ${mediumBestScore.toFixed(precision)}`,
         width / 2,
         420
       )
     }
-    startButtonTarget.draw();
+    if (hardBestScore < Infinity) {
+      text(
+        `Hard: ${hardBestScore.toFixed(precision)}`,
+        width / 2,
+        460
+      )
+    }
+    startButtonEasy.draw();
+    startButtonMedium.draw();
+    startButtonHard.draw();
+    fill(200, 100, 30);
+    noStroke();
+    text(
+      'Easy',
+      width / 4,
+      height / 2
+    );
+    text(
+      'Medium',
+      width / 2,
+      height / 2
+    );
+    text(
+      'Hard',
+      width - width / 4,
+      height / 2
+    );
+
   }
 
   player.draw();
@@ -73,9 +131,19 @@ function mouseClicked() {
   if (gameStarted) {
     targetList.checkHit(player.x, player.y, player.radius);
   } else {
-    startButtonTarget.isOverlapping(player.x, player.y, player.radius);
+    startButtonEasy.isOverlapping(player.x, player.y, player.radius);
+    startButtonMedium.isOverlapping(player.x, player.y, player.radius);
+    startButtonHard.isOverlapping(player.x, player.y, player.radius);
 
-    if (startButtonTarget.isHit) {
+    if (startButtonEasy.isHit) {
+      difficulty = 'Easy';
+    } else if (startButtonMedium.isHit) {
+      difficulty = 'Medium';
+    } else if (startButtonHard.isHit) {
+      difficulty = 'Hard';
+    }
+
+    if (startButtonEasy.isHit || startButtonMedium.isHit || startButtonHard.isHit) {
       gameStarted = true;
       resetGame();
     }
